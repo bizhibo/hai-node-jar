@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ssdev="http://www.bsoft.com.cn/schema/ssdev"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.bsoft.com.cn/schema/ssdev
+	http://www.bsoft.com.cn/schema/ssdev/ssdev.xsd">
+
+
+    <bean id="appContextHolder" class="ctd.util.AppContextHolder">
+        <property name="devMode" value="true"></property>
+    </bean>
+
+    <ssdev:service id="esOperateService" class="com.hai.log.collect.rpc.ESOperateService"/>
+</beans>	
+

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.iBATIS.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="monitor">
+
+    <insert id="insertStepLog" parameterClass="java.util.HashMap">
+        insert into HAI_SERVICERECORD(
+	    PROCEDUREID,
+	    INPUTNAME,
+	    STEPID,
+	    STEPNAME,
+	    INVOKEIP,
+	    URID,
+	    DATETIMA,
+	    PARTTIME,
+	    INVOKEINDEX
+	    )values(
+	    #ProcedeureID#,
+	    #InputName#,
+	    #StepID#,
+	    #StepName#,
+	    #ServerIP#,
+	    #Urid#,
+	    to_date(#DateTime#,'yyyy-mm-dd hh24:mi:ss'),
+	    #PartTime#,
+	    #Index#
+	    )
+    </insert>
+    
+    <insert id="insertReturnStepLog" parameterClass="java.util.List">
+    <![CDATA[
+        insert all
+    ]]>
+        <iterate conjunction =" ">
+        into HAI_SERVICERECORD(
+        PARTTIME,
+        PROCEDUREID,
+        STEPID,
+        INVOKEINDEX,
+        INPUTNAME,
+        STEPNAME,
+        INVOKEIP,
+        SERVERIP,
+        DATETIMA,
+        STARTDATE,
+        ENDDATE,
+        COST,
+        URID,
+        ERRID
+        )values
+        (
+        #record[].PartTime#,
+        #record[].ProcedeureID#,
+        #record[].StepID#,
+        #record[].Index#,
+        #record[].InputName#,
+        #record[].StepName#,
+        #record[].InvokeIP#,
+        #record[].ServerIP#,
+        to_date(#record[].DateTime#,'yyyy-mm-dd hh24:mi:ss'),
+        to_date(#record[].StartTime#,'yyyy-mm-dd hh24:mi:ss'),
+        to_date(#record[].EndTime#,'yyyy-mm-dd hh24:mi:ss'),
+        #record[].Cost#,
+        #record[].Urid#,
+        #record[].ErrId#
+        )
+        </iterate>
+        <![CDATA[
+        select * from dual
+        ]]>
+    </insert>
+
+    <insert id="insertStepDataLog" parameterClass="java.util.HashMap">
+        insert into HAI_SERVICEDATA(
+        PROCEDUREID,
+        STEPID,
+        DATETIMA,
+        PARTTIME,
+        ARGS,
+        INVOKEINDEX
+        )values(
+        #ProcedeureID#,
+        #StepID#,
+        to_date(#DateTime#,'yyyy-mm-dd hh24:mi:ss'),
+        #PartTime#,
+        #Args#,
+        #Index#
+        )
+    </insert>
+
+    <insert id="insertReturnStepDataLog" parameterClass="java.util.List">
+    <![CDATA[
+        insert all
+    ]]>
+        <iterate conjunction =" ">
+        into HAI_SERVICEDATA(
+        PROCEDUREID,
+        STEPID,
+        INVOKEINDEX,
+        DATETIMA,
+        PARTTIME,
+        ARGS,
+        RETURN
+        )values
+        (
+        #record[].ProcedeureID#,
+        #record[].StepID#,
+        #record[].Index#,
+        to_date(#record[].DateTime#,'yyyy-mm-dd hh24:mi:ss'),
+        #record[].PartTime#,
+        #record[].Args#,
+        #record[].Return#
+        )
+        </iterate>
+        <![CDATA[
+        select * from dual
+        ]]>
+    </insert>
+    
+    <insert id="insertProcedeureLog" parameterClass="java.util.List">
+    <![CDATA[
+        insert all
+    ]]>
+        <iterate conjunction =" ">
+        into HAI_PROCEDURERECORD(
+        PROCEDUREID,
+        INPUTNAME,
+        URID,
+        SERVERIP,
+        DATETIMA,
+        PARTTIME,
+        COST,
+        ERRID,
+        REQUESTIP,
+        REQUESTPORT,
+        ENTRYPOINTID,
+        REQUESTTYPE
+        )values(
+        #record[].ProcedeureID#,
+        #record[].InputName#,
+        #record[].Urid#,
+        #record[].ServerIP#,
+        to_date(#record[].DateTime#,'yyyy-mm-dd hh24:mi:ss'),
+        #record[].PartTime#,
+        #record[].Cost#,
+        #record[].ErrId#,
+        #record[].requestIP#,
+        #record[].requestPort#,
+        #record[].entryPointID#,
+        #record[].requestType#
+        )
+        </iterate>
+        <![CDATA[
+        select * from dual
+        ]]>
+    </insert>
+
+    <insert id="insertProcedeureDataLog" parameterClass="java.util.List">
+    <![CDATA[
+        insert all
+    ]]>
+        <iterate conjunction =" ">
+        into HAI_PROCEDUREDATA(
+        PROCEDUREID,
+        DATETIMA,
+        PARTTIME,
+        ARGS,
+        RETURN
+        )values(
+        #record[].ProcedeureID#,
+        to_date(#record[].DateTime#,'yyyy-mm-dd hh24:mi:ss'),
+        #record[].PartTime#,
+        #record[].Args#,
+        #record[].Return#
+        )
+        </iterate>
+        <![CDATA[
+        select * from dual
+        ]]>
+    </insert>
+
+    <select id="getStepArgs" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+        SELECT T.ARGS FROM
+        HAI_SERVICEDATA T
+        WHERE T.PROCEDUREID = '$PROCEDUREID$' 
+        AND T.STEPID='$STEPID$'
+    </select>
+    
+    <insert id="insertRollBackLog" parameterClass="java.util.List">
+    <![CDATA[
+        insert all
+    ]]>
+        <iterate conjunction =" ">
+        into HAI_TCC_TRANSACTION(
+        PROCEDUREID,
+        STEPID,
+        STEPNAME,
+        ERRCODE,
+        ERRDATE,
+        URID,
+        INPUTNAME,
+        FLOWMSG,
+        ERRSTACK,
+        MSGTYPE
+        )values(
+        #ProcedeureID#,
+        #StepID#,
+        #StepName#,
+        #errCode#,
+        to_date(#errDate#,'yyyy-mm-dd hh24:mi:ss'),
+        #Urid#,
+        #InputName#,
+        #flowMsg#,
+        #errStack#,
+        #msgType#
+        )
+        </iterate>
+        <![CDATA[
+        select * from dual
+        ]]>
+    </insert>
+    
+	<insert id="insertHaiExceptionLog" parameterClass="java.util.List">
+	<![CDATA[
+		insert all
+	]]>
+        <iterate conjunction =" ">
+		into HAI_ERRRECORD(
+		ERRID,
+		ERRTIME,
+		PARTTIME,
+		ERRIP,
+		ERRCODE,
+		ERRMSG,
+		ERRSTACK,
+		ERRSTATE
+		)values(
+		#record[].ERRID#,
+		#record[].ERRTIME#,
+		#record[].PARTTIME#,
+		#record[].ERRIP#,
+		#record[].ERRCODE#,
+		#record[].ERRMSG#,
+		#record[].ERRSTACK#,
+		#record[].ERRSTATE#
+		)
+		</iterate>
+        <![CDATA[
+        select * from dual
+        ]]>
+	</insert>
+	
+    <delete id="deleteStepLog" parameterClass="java.util.List">
+    <![CDATA[
+        DELETE HAI_SERVICERECORD T
+    ]]>
+        <iterate prepend="WHERE" conjunction="OR">
+        <![CDATA[
+	        T.PARTTIME = #record[].PartTime# 
+	        AND T.PROCEDUREID = #record[].ProcedeureID# 
+	        AND T.STEPID= #record[].StepID#
+	        AND T.INVOKEINDEX= #record[].Index#
+        ]]>
+		</iterate>
+    </delete>
+
+    <delete id="deleteStepDataLog" parameterClass="java.util.List">
+    <![CDATA[
+        DELETE HAI_SERVICEDATA T
+    ]]>
+        <iterate prepend="WHERE" conjunction="OR">
+        <![CDATA[
+	        T.PARTTIME = #record[].PartTime# 
+	        AND T.PROCEDUREID = #record[].ProcedeureID# 
+	        AND T.STEPID= #record[].StepID#
+	        AND T.INVOKEINDEX= #record[].Index#
+       	]]>
+		</iterate>
+    </delete>
+</sqlMap>
